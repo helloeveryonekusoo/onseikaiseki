@@ -1,0 +1,7 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+faster-whisper>=1.2.1
+# av 19 で faster-whisper が使う引数 (metadata_errors) が削除されたため固定
+av>=11,<19
+anthropic>=2.6.0
