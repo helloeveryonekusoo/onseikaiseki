@@ -13,7 +13,7 @@
 <main>
   <header>
     <h1>音声文字起こし</h1>
-    <p class="lead">iPhoneのボイスメモなどの録音を文字にします。英語の音声は日本語に翻訳できます。</p>
+    <p class="lead">iPhoneのボイスメモなどの録音を文字にします。<span id="translate-lead" hidden>英語の音声は日本語に翻訳できます。</span></p>
   </header>
 
   <form id="form" class="card">
@@ -43,7 +43,7 @@
         </select>
       </label>
     </div>
-    <label class="toggle">
+    <label class="toggle" id="translate-option" hidden>
       <input type="checkbox" id="translate" checked>
       <span>英語の音声を日本語に翻訳する</span>
     </label>

@@ -18,6 +18,17 @@
 
   let xhr = null;
   let state = null;
+  let translationAvailable = false;
+
+  // 翻訳 (Claude API キー) が設定されているときだけ翻訳スイッチを表示する
+  fetch("/api/health")
+    .then((r) => r.json())
+    .then((h) => {
+      translationAvailable = !!h.translation_available;
+      $("translate-option").hidden = !translationAvailable;
+      $("translate-lead").hidden = !translationAvailable;
+    })
+    .catch(() => {});
 
   // ---------- ファイル選択 ----------
   const formatSize = (bytes) =>
@@ -195,7 +206,7 @@
     data.append("file", file, file.name);
     data.append("language", $("language").value);
     data.append("quality", $("quality").value);
-    data.append("translate", $("translate").checked ? "true" : "false");
+    data.append("translate", translationAvailable && $("translate").checked ? "true" : "false");
 
     // XMLHttpRequest はアップロード進捗と、レスポンスの逐次受信の両方を扱える (Safari でも動作)
     xhr = new XMLHttpRequest();

@@ -35,19 +35,27 @@ python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
 
-export ANTHROPIC_API_KEY=sk-ant-...   # 翻訳に必要 (未設定なら翻訳だけスキップ)
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-ブラウザで `http://<サーバーのIP>:8000` を開きます。初回起動時は Hugging Face から Whisper モデル (約 1.6GB) をダウンロードします。
+ブラウザで `http://<サーバーのIP>:8000` を開きます。文字起こしは自分のマシン上で動くので、料金はかかりません。初回起動時は Hugging Face から Whisper モデル (約 1.6GB) をダウンロードします。
+
+### 翻訳を使う場合 (任意・有料)
+
+英語→日本語の翻訳は Claude API を使うため、従量課金がかかります。使う場合だけ、起動前に API キーを設定してください。設定しなければ翻訳のスイッチは画面に表示されず、文字起こしだけが無料で動きます。
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+export TRANSLATE_MODEL=claude-haiku-5-5   # 安く速くしたい場合 (英語1時間あたり数円程度)
+```
 
 ### Docker
 
 ```bash
 docker build -t onseikaiseki .
-docker run -p 8000:8000 -e ANTHROPIC_API_KEY=sk-ant-... onseikaiseki
+docker run -p 8000:8000 onseikaiseki
 # GPU を使う場合 (NVIDIA Container Toolkit が必要)
-docker run --gpus all -p 8000:8000 -e ANTHROPIC_API_KEY=sk-ant-... onseikaiseki
+docker run --gpus all -p 8000:8000 onseikaiseki
 ```
 
 ### iPhone からの使い方
@@ -56,7 +64,7 @@ docker run --gpus all -p 8000:8000 -e ANTHROPIC_API_KEY=sk-ant-... onseikaiseki
 2. iPhone の Safari でこのサイトを開き、「録音ファイルを選択」からそのファイルを選びます。
 3. 「文字起こしを開始」を押します。
 
-外部に公開する場合は、HTTPS 化と認証の追加 (リバースプロキシの Basic 認証など) を必ず行ってください。今の状態では認証がないため、誰でも API の利用料金を発生させられます。
+外部に公開する場合は、HTTPS 化と認証の追加 (リバースプロキシの Basic 認証など) を行ってください。今の状態では認証がなく、URL を知っている人は誰でもアップロードできます。翻訳を有効にしている場合は、その利用料金も発生します。
 
 ## 設定 (環境変数)
 
@@ -67,7 +75,7 @@ docker run --gpus all -p 8000:8000 -e ANTHROPIC_API_KEY=sk-ant-... onseikaiseki
 | `WHISPER_COMPUTE_TYPE` | `auto` | GPU は `float16`、CPU は `int8` |
 | `WHISPER_BATCH_SIZE` | `8` | GPU なら 16 前後に上げると速くなる |
 | `WHISPER_CPU_THREADS` | `0` | 0 = 全コアを使う |
-| `ANTHROPIC_API_KEY` | – | 翻訳に使う Claude API キー |
+| `ANTHROPIC_API_KEY` | – | 翻訳に使う Claude API キー。未設定なら翻訳機能はオフ (無料) |
 | `TRANSLATE_MODEL` | `claude-opus-5-5` | 翻訳に使う Claude のモデル。`claude-haiku-5-5` にすると、より速く安くなる |
 | `TRANSLATE_EFFORT` | `low` | 翻訳時の思考の深さ。`low` が最速 |
 | `TRANSLATE_CHUNK_CHARS` | `600` | 1 回の翻訳でまとめる英文の文字数 |
